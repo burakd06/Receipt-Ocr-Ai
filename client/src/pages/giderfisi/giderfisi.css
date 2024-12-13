@@ -1,0 +1,157 @@
+.containergiderfisi {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.left-boxgiderfisi,
+.right-boxgiderfisi {
+  width: 45%;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.cropped-previewgiderfisi,
+.original-previewgiderfisi {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.cropped-previewgiderfisi img,
+.original-previewgiderfisi img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  cursor: pointer; /* Tıklanabilir olduğunu belirtmek için */
+}
+
+.scan-buttongiderfisi {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.scan-button.loadinggiderfisi {
+  background-color: #f39c12;
+  cursor: not-allowed;
+}
+
+.scan-button:hover:not(.loading) {
+  background-color: #45a049;
+}
+
+.result-boxgiderfisi {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+
+.result-inputgiderfisi {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+
+.result-boxgiderfisi {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+
+.full-resultgiderfisi {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.full-resultgiderfisi pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background-color: #eee;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+#GiderFisiAnasayfa {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  background-color: #f39c12;
+  padding: 10px 20px; 
+  font-size: 14px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+#GiderFisiAnasayfa:hover {
+  background-color: #e67e22; 
+}
+
+
+.video-containergiderfisi {
+  max-width: 500px; 
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.video-previewgiderfisi {
+  width: 100%;
+  border: 2px solid #fff;
+  border-radius: 8px;
+}
+
+.camera-buttonsgiderfisi {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 500px;
+}
+
+.capture-buttongiderfisi, .close-camera-buttongiderfisi {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.capture-buttongiderfisi:hover, .close-camera-buttongiderfisi:hover {
+  background-color: #218838;
+}
+.capture-buttongiderfisi:focus, .close-camera-buttongiderfisi:focus {
+  outline: none;
+}
+
+

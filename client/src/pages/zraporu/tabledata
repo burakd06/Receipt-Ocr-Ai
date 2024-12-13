@@ -1,0 +1,58 @@
+// const processOcrTextToTable = (ocrData) => {
+//   const rawText = ocrData || "";
+//   const lines = rawText.split("\n");
+
+//   const seenValues = new Set();  // Daha önce eklenmiş değerleri tutacak set
+//   let addressBuffer = "";  // Adresleri birleştirmek için geçici değişken
+
+//   return lines.map((line, index) => {
+//     const parts = line.split(":");
+
+//     // "V.D", "VD", "Vergi Dairesi", "TCKN", "TC NO", "TC KİMLİK" kelimelerini kontrol et
+//     const vknKeywords = ["V.D", "VD", "Vergi Dairesi", "TCKN", "TC NO", "TC KİMLİK"];
+//     const containsVknKeyword = vknKeywords.some((keyword) => line.includes(keyword));
+
+//     if (containsVknKeyword) {
+//       const vknMatch = line.match(/V\.D|VD|Vergi Dairesi|TCKN|TC NO|V D|vd|v d| TC KİMLİK\s*[-:]*\s*(\d+)/i);
+//       if (vknMatch && vknMatch[1]) {
+//         const value = vknMatch[1].trim();
+//         if (seenValues.has(value)) {
+//           return null;  // Eğer değer zaten varsa, bu satırı atla
+//         }
+//         seenValues.add(value);  // Yeni değeri set'e ekle
+//         return { title: "VKN", value };  // Numara kısmını alıp VKN'ye yerleştir
+//       }
+//       return null;  // Eğer değer bulunamadıysa, bu satırı atla
+//     }
+
+//     // Adres kısımlarını kontrol et (örneğin "MH." veya "CD." gibi kısaltmalar ve "Fatih/İstanbul")
+//     const addressKeywords = ["MH.", "CD.", "Sokak", "Cadde", "Mahalle", "CADDE", "MAHALLE", "SOKAK", "ISKELE", "İskelesi"];
+//     const containsAddressKeyword = addressKeywords.some((keyword) => line.includes(keyword));
+
+//     // Adres kısmı tespit edildiğinde, onu birleştir
+//     if (containsAddressKeyword || line.match(/[0-9]{1,5}[\/\-][A-Za-z]+/)) {
+//       addressBuffer += line.trim() + " ";  // Adres satırlarını birleştir
+//       if (line.includes("IST") || line.includes("İstanbul")) {
+//         // Adresin sonlanıp sonlanmadığını kontrol et
+//         if (seenValues.has(addressBuffer.trim())) {
+//           return null;  // Eğer adres zaten varsa, bu satırı atla
+//         }
+//         seenValues.add(addressBuffer.trim());  // Adresi set'e ekle
+//         return { title: "Adres", value: addressBuffer.trim() };  // Adresi Adres başlığı altında al
+//       }
+//       return null;  // Eğer henüz tamamlanmamışsa, satırı atla
+//     }
+
+//     // Diğer satırlar için normal işleme
+//     if (parts.length === 2) {
+//       const value = parts[1].trim();
+//       if (seenValues.has(value)) {
+//         return null;  // Eğer değer zaten varsa, bu satırı atla
+//       }
+//       seenValues.add(value);  // Yeni değeri set'e ekle
+//       return { title: parts[0].trim(), value };  // Başlık ve değer
+//     }
+
+//     return null;  // Diğer durumda satırı atla
+//   }).filter(item => item !== null);  // Null olanları temizle
+// };
