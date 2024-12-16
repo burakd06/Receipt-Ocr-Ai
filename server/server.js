@@ -6,7 +6,7 @@ const fs = require("fs");
 const cors = require("cors");
 
 const app = express();
-const port = 5000;
+const port = 5002;
 
 // CORS izinleri
 app.use(cors());
