@@ -1,3 +1,6 @@
+// .env dosyasındaki ayarları yükle
+require('dotenv').config();
+
 const express = require("express");
 const multer = require("multer");
 const axios = require("axios");
@@ -6,7 +9,11 @@ const fs = require("fs");
 const cors = require("cors");
 
 const app = express();
-const port = 5002;
+
+// .env dosyasından port ve upload dizini gibi ayarları al
+const port = process.env.PORT || 5002;
+const uploadDir = process.env.UPLOAD_DIR || "uploads";
+const ocrApiUrl = process.env.OCR_API_URL || "http://localhost:5001/ocr";
 
 // CORS izinleri
 app.use(cors());
@@ -14,7 +21,7 @@ app.use(cors());
 // Multer ile dosya yükleme işlemi
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -32,7 +39,7 @@ app.post("/ocr", upload.single("image"), async (req, res) => {
 
   try {
     // Python OCR API'ye dosyayı gönderme
-    const response = await axios.post("http://localhost:5001/ocr", formData, {
+    const response = await axios.post(ocrApiUrl, formData, {
       headers: formData.getHeaders(),
     });
 
@@ -46,7 +53,6 @@ app.post("/ocr", upload.single("image"), async (req, res) => {
     res.status(500).send("OCR işlemi sırasında bir hata oluştu.");
   }
 });
-
 
 // Sunucu başlatma
 app.listen(port, () => {

@@ -7,7 +7,8 @@ import numpy as np
 app = Flask(__name__)
 
 
-ocr = PaddleOCR(use_angle_cls=True, lang='tr') 
+ocr = PaddleOCR(use_angle_cls=True, lang='tr', use_gpu=False)  # GPU kullanımını kapatma kodu
+
 
 
 def process_image(image_path):
