@@ -73,7 +73,7 @@ const GiderFİsi = () => {
       const formData = new FormData();
       formData.append("image", dataURLtoFile(croppedImage, "cropped-image.jpg"));
 
-      const response = await axios.post("http://localhost:5000/ocr", formData, {
+      const response = await axios.post("http://http://api-test.rahatfis.com:5002/ocr", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
