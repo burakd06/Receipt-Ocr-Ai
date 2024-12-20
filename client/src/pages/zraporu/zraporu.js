@@ -4,25 +4,30 @@ import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import "./zraporu.css";
 import axios from "axios";
+import JsonToExcel from "../components/JsonToExcel";
 
 const Zrapor = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [cameraStream, setCameraStream] = useState(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [currentCamera, setCurrentCamera] = useState(null);
+  const [cameras, setCameras] = useState([]);
   const videoRef = useRef(null);
   const cropperRef = useRef(null);
   const [result, setResult] = useState({
-    ZNo: [],
     Unvan: "",
     Adres: "",
     Tarih: [],
+    ZNo: [],
     Toplam: [],
     Topkdv: [],
   });
   const [rawText, setRawText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // kamera
+  const [errorMessage, setErrorMessage] = useState(""); // scan error
+  const [jsonOutput, setJsonOutput] = useState(""); // JSON çıktısı için state
 
   const handleFileChange = (e) => {
     setFile(URL.createObjectURL(e.target.files[0]));
@@ -32,14 +37,36 @@ const Zrapor = () => {
     navigate("/");
   };
 
-  const openCamera = async () => {
+  const getCameras = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === "videoinput");
+      setCameras(videoDevices);
+      if (videoDevices.length > 0) {
+        setCurrentCamera(videoDevices[0].deviceId); // İlk kamerayı varsayılan olarak seç
+      }
+    } catch (error) {
+      console.error("Kameralar alınamadı:", error);
+    }
+  };
+
+  const openCamera = async (deviceId) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: deviceId } },
+      });
       setCameraStream(stream);
       setIsCameraOpen(true);
     } catch (error) {
       console.error("Kamera açılamadı:", error);
     }
+  };
+
+  const switchCamera = () => {
+    if (cameras.length < 2) return; // Eğer sadece bir kamera varsa, geçiş yapma
+    const nextCamera = cameras.find(cam => cam.deviceId !== currentCamera);
+    setCurrentCamera(nextCamera.deviceId);
+    openCamera(nextCamera.deviceId);
   };
 
   const capturePhoto = () => {
@@ -71,23 +98,27 @@ const Zrapor = () => {
     const croppedImage = croppedCanvas.toDataURL("image/jpeg");
 
     setIsLoading(true);
+    setErrorMessage(""); // Önceki hatayı temizle
 
     try {
       const formData = new FormData();
       formData.append("image", dataURLtoFile(croppedImage, "cropped-image.jpg"));
 
-      const response = await axios.post("http://api-test.rahatfis.com/ocr", formData, {
+      const ocrApiUrl = process.env.REACT_APP_OCR_API_URL;
+
+      const response = await axios.post(ocrApiUrl, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      const rawText = response.data.text; // Full OCR text
-      setRawText(rawText); // Store the raw text
+      const rawText = response.data.text;
+      setRawText(rawText);  // OCR sonucunu rawText'e kaydet
 
-      setResult(parseResult(rawText)); // Parse and store the result
+      setResult(parseResult(rawText));
     } catch (error) {
       console.error("Hata:", error);
+      setErrorMessage("Tarama başarısız oldu. Lütfen tekrar deneyin.");
     } finally {
       setIsLoading(false);
     }
@@ -180,21 +211,22 @@ const Zrapor = () => {
 
   const convertToJson = () => {
     const jsonResult = JSON.stringify(result, null, 2); // JSON formatında düzenleme
-    return jsonResult;
+    setJsonOutput(jsonResult); // JSON çıktısını state'e kaydet
   };
 
   useEffect(() => {
     if (videoRef.current && cameraStream) {
       videoRef.current.srcObject = cameraStream;
     }
+    getCameras();
   }, [cameraStream]);
 
   return (
     <div className="containerzrapor">
       <div className="left-boxzrapor">
-        <h2>Z Raporu</h2>
+        <h2>Z Raporu </h2>
         <input type="file" onChange={handleFileChange} className="file-input" />
-        <button onClick={openCamera} className="camera-buttonzrapor">
+        <button onClick={() => openCamera(currentCamera)} className="camera-buttonzrapor">
           Kamera Aç
         </button>
 
@@ -211,6 +243,11 @@ const Zrapor = () => {
                 Kapat
               </button>
             </div>
+            {cameras.length > 1 && (
+              <button onClick={switchCamera} className="switch-camera-button">
+                Kamerayı Değiştir
+              </button>
+            )}
           </div>
         )}
 
@@ -246,6 +283,11 @@ const Zrapor = () => {
             "Taramayı Başlat"
           )}
         </button>
+        {errorMessage && (
+          <div className="z-raporu-error-message">
+            <p>{errorMessage}</p>
+          </div>
+        )}
       </div>
 
       <div className="right-boxzrapor">
@@ -318,20 +360,18 @@ const Zrapor = () => {
             </tbody>
           </table>
         </div>
+        <button onClick={convertToJson} className="json-buttonzrapor">JSON Çıktısı</button>
+        <div className="json-output">
+          <pre>{jsonOutput}</pre>
+          <JsonToExcel jsonData={[result]} fileName="Zraporu.xlsx" />
+        </div>
 
-        <h3>JSON Formatında Çıktı</h3>
-        <pre>{convertToJson()}</pre>
-
-        {isModalOpen && (
-          <div className="modalzrapor">
-            <div className="modal-content">
-              <button onClick={() => setIsModalOpen(false)}>Kapat</button>
-            </div>
-          </div>
-        )}
-
+        <div className="ocr-output">
+          <h3>OCR Sonucu:</h3>
+          <p>{rawText}</p>
+        </div>
         <button id="zraporAnasayfa" onClick={handleBackHome} className="back-button">
-          Ana Sayfaya
+          Ana Sayfa
         </button>
       </div>
     </div>

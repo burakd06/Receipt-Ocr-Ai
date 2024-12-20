@@ -158,3 +158,9 @@
   outline: none;
 }
 
+.z-raporu-error-message {
+  color: red;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
